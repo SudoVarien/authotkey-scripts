@@ -9,11 +9,13 @@
 ;#IfWinActive DOS II ; Script only runs if active in DOS II
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+CoordMode Pixel ; Used to find coords for Ear Cancel
 
 ; variables
 global screenX := (A_ScreenWidth // 2)
 global screenY := (A_ScreenHeight // 2)
 global cookies=0
+global GoodCookies = 1
 
 ; hotkey
 $f10::
@@ -43,5 +45,28 @@ multiClick()
 	MouseMove screenX, screenY
 	send {LButton}
 	sleep, 1000
+	findEar()
 	}
 }
+
+findEar()
+	{
+	ImageSearch, FoundX, FoundY, 1504,696, 1570, 760, %A_ScriptDir%/ear.png
+	ErrorLevel = GoodCookies
+	While GoodCookies = 0
+		{
+		;MsgBox, The icon was found at %FoundX%x%FoundY%.
+		MouseMove FoundX, FoundY
+		sleep, 100
+		send {LButton}
+		sleep, 1000
+		if ErrorLevel = 1
+			{
+			GoodCookies = 1
+			}
+		Else
+			{
+			findEar()
+			}
+		}
+	}
